@@ -1,6 +1,5 @@
 import '../../domain/entities/recording_entity.dart';
 import '../database/app_database.dart';
-import '../models/recording.dart';
 import 'recording_repository.dart';
 
 class RecordingRepositoryImpl implements RecordingRepository {
@@ -10,26 +9,27 @@ class RecordingRepositoryImpl implements RecordingRepository {
 
   @override
   Future<void> deleteAll() async {
-    _db.recordings.clear();
+    await _db.customStatement('DELETE FROM recordings');
   }
 
   @override
   Future<void> deleteRecording(String id) async {
-    _db.recordings.removeWhere((item) => item.id == id);
+    await _db.customStatement('DELETE FROM recordings WHERE id = ?', [id]);
   }
 
   @override
   Future<List<RecordingEntity>> getRecordings() async {
-    return _db.recordings
+    final rows = await _db.customSelect('SELECT * FROM recordings ORDER BY created_at DESC').get();
+    return rows
         .map(
           (r) => RecordingEntity(
-            id: r.id,
-            fileName: r.fileName,
-            filePath: r.filePath,
-            duration: r.duration,
-            effectName: r.effectName,
-            createdAt: r.createdAt,
-            isFavorite: r.isFavorite,
+            id: r.read<String>('id'),
+            fileName: r.read<String>('file_name'),
+            filePath: r.read<String>('file_path'),
+            duration: r.read<int>('duration'),
+            effectName: r.read<String>('effect_name'),
+            createdAt: r.read<int>('created_at'),
+            isFavorite: (r.read<int>('is_favorite') ?? 0) == 1,
           ),
         )
         .toList(growable: false);
@@ -37,16 +37,18 @@ class RecordingRepositoryImpl implements RecordingRepository {
 
   @override
   Future<void> saveRecording(RecordingEntity recording) async {
-    _db.recordings.add(
-      RecordingModel(
-        id: recording.id,
-        fileName: recording.fileName,
-        filePath: recording.filePath,
-        duration: recording.duration,
-        effectName: recording.effectName,
-        createdAt: recording.createdAt,
-        isFavorite: recording.isFavorite,
-      ),
+    await _db.customStatement(
+      'INSERT INTO recordings (id, file_name, file_path, duration, effect_name, created_at, is_favorite) '
+      'VALUES (?, ?, ?, ?, ?, ?, ?)',
+      [
+        recording.id,
+        recording.fileName,
+        recording.filePath,
+        recording.duration,
+        recording.effectName,
+        recording.createdAt,
+        recording.isFavorite ? 1 : 0,
+      ],
     );
   }
 }

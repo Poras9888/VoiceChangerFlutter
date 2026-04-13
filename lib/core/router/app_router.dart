@@ -10,6 +10,7 @@ import '../../presentation/screens/saved_recordings/saved_recordings_screen.dart
 import '../../presentation/screens/settings/settings_screen.dart';
 import '../../presentation/screens/switch_voice/switch_voice_screen.dart';
 import '../../presentation/screens/text_to_audio/text_to_audio_screen.dart';
+import '../security/biometric_gate.dart';
 
 Page<void> _buildTransitionPage(Widget child, GoRouterState state) {
   return CustomTransitionPage<void>(
@@ -67,7 +68,13 @@ final appRouter = GoRouter(
     ),
     GoRoute(path: '/reverse-voice', pageBuilder: (c, s) => _buildTransitionPage(const ReverseVoiceScreen(), s)),
     GoRoute(path: '/switch-voice', pageBuilder: (c, s) => _buildTransitionPage(const SwitchVoiceScreen(), s)),
-    GoRoute(path: '/saved-recordings', pageBuilder: (c, s) => _buildTransitionPage(const SavedRecordingsScreen(), s)),
+    GoRoute(
+      path: '/saved-recordings',
+      pageBuilder: (c, s) => _buildTransitionPage(
+        const BiometricGate(child: SavedRecordingsScreen()),
+        s,
+      ),
+    ),
     GoRoute(path: '/settings', pageBuilder: (c, s) => _buildTransitionPage(const SettingsScreen(), s)),
   ],
 );

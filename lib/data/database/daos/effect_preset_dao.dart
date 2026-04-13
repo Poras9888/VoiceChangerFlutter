@@ -1,10 +1,11 @@
-import '../app_database.dart';
-import '../../models/effect_preset.dart';
+import 'package:drift/drift.dart';
 
+import '../app_database.dart';
+ 
 class EffectPresetDao {
   EffectPresetDao(this.db);
 
   final AppDatabase db;
 
-  Future<List<EffectPresetModel>> getAll() async => db.presets;
+  Future<List<EffectPreset>> getAll() => db.select(db.effectPresets).get();
 }

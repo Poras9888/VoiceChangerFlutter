@@ -8,5 +8,7 @@
 <string>Used to record your voice for effects</string>
 <key>NSFaceIDUsageDescription</key>
 <string>Used to lock your saved recordings</string>
+<key>GADApplicationIdentifier</key>
+<string>ca-app-pub-3940256099942544~1458002511</string>
 </dict>
 </plist>

@@ -4,6 +4,9 @@ import 'package:local_auth/local_auth.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../core/ads/consent_manager.dart';
+import '../../../core/security/biometric_guard_service.dart';
+import '../../../injection.dart';
 import 'settings_cubit.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -31,12 +34,18 @@ class SettingsScreen extends StatelessWidget {
                   title: const Text('Biometric Lock'),
                   value: state.biometricLock,
                   onChanged: (value) async {
+                    if (!value) {
+                      context.read<SettingsCubit>().setBiometricLock(false);
+                      getIt<BiometricGuardService>().setLockEnabled(false);
+                      return;
+                    }
                     final ok = await LocalAuthentication().authenticate(
                       localizedReason: 'Enable biometric lock',
                       options: const AuthenticationOptions(biometricOnly: true),
                     );
                     if (ok) {
                       context.read<SettingsCubit>().setBiometricLock(value);
+                      getIt<BiometricGuardService>().setLockEnabled(value);
                     }
                   },
                 ),
@@ -44,6 +53,7 @@ class SettingsScreen extends StatelessWidget {
                   padding: EdgeInsets.symmetric(vertical: 8),
                   child: Text('ABOUT', style: TextStyle(fontSize: 12, color: Colors.black54)),
                 ),
+                _tile(context, Icons.manage_accounts, 'Manage Ad Consent', '', () => getIt<ConsentManager>().showPrivacyOptions()),
                 _tile(context, Icons.privacy_tip, 'Privacy Policy', '', () => launchUrl(Uri.parse('https://example.com/privacy'))),
                 _tile(context, Icons.star_rate, 'Rate App', '', () => launchUrl(Uri.parse('https://example.com/store'))),
                 _tile(context, Icons.share, 'Share App', '', () => Share.share('Try Voice Changer & Sound Effects Recorder!')),
