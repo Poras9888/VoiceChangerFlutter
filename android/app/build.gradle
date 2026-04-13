@@ -1,0 +1,8 @@
+android {
+    namespace "com.voice.changer.sound.effects.recorder"
+    defaultConfig {
+        applicationId "com.voice.changer.sound.effects.recorder"
+        minSdkVersion 24
+        targetSdkVersion 34
+    }
+}
