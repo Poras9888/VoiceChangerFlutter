@@ -3,6 +3,7 @@ import 'package:injectable/injectable.dart';
 
 import 'core/ads/ad_service.dart';
 import 'core/ads/consent_manager.dart';
+import 'core/ads/remote_ads_config_service.dart';
 import 'core/security/biometric_guard_service.dart';
 import 'data/database/app_database.dart';
 import 'data/repositories/effect_repository.dart';
@@ -20,6 +21,7 @@ final getIt = GetIt.instance;
 Future<void> configureDependencies() async {
   getIt.registerLazySingleton<ConsentManager>(ConsentManager.new);
   getIt.registerLazySingleton<AdService>(AdService.new);
+  getIt.registerLazySingleton<RemoteAdsConfigService>(RemoteAdsConfigService.new);
   getIt.registerLazySingleton<BiometricGuardService>(BiometricGuardService.new);
   final appDatabase = AppDatabase();
   await appDatabase.ensureReady();

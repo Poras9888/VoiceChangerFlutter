@@ -6,8 +6,19 @@ import 'ad_ids.dart';
 class AdService {
   BannerAd? _banner;
   InterstitialAd? _interstitial;
+  String _bannerId = AdIds.banner;
+  String _interstitialId = AdIds.interstitial;
 
   final ValueNotifier<BannerAd?> bannerNotifier = ValueNotifier<BannerAd?>(null);
+
+  void setRemoteUnitIds({required String bannerId, required String interstitialId}) {
+    if (bannerId.trim().isNotEmpty) {
+      _bannerId = bannerId.trim();
+    }
+    if (interstitialId.trim().isNotEmpty) {
+      _interstitialId = interstitialId.trim();
+    }
+  }
 
   Future<void> initialize({required bool canRequestAds}) async {
     await MobileAds.instance.initialize();
@@ -21,7 +32,7 @@ class AdService {
   Future<void> loadBanner() async {
     _banner?.dispose();
     final banner = BannerAd(
-      adUnitId: AdIds.banner,
+      adUnitId: _bannerId,
       request: const AdRequest(),
       size: AdSize.banner,
       listener: BannerAdListener(
@@ -42,7 +53,7 @@ class AdService {
 
   Future<void> loadInterstitial() async {
     await InterstitialAd.load(
-      adUnitId: AdIds.interstitial,
+      adUnitId: _interstitialId,
       request: const AdRequest(),
       adLoadCallback: InterstitialAdLoadCallback(
         onAdLoaded: (ad) {
