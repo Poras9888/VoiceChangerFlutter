@@ -37,7 +37,7 @@ class _BiometricGateState extends State<BiometricGate> {
     final auth = LocalAuthentication();
     final ok = await auth.authenticate(
       localizedReason: 'Authenticate to view saved recordings',
-      options: const AuthenticationOptions(biometricOnly: true),
+      biometricOnly: true,
     );
 
     if (!mounted) return;

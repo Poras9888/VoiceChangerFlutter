@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/ads/ad_service.dart';
@@ -133,19 +132,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
-            ValueListenableBuilder<BannerAd?>(
-              valueListenable: _adService.bannerNotifier,
-              builder: (context, bannerAd, _) {
-                if (bannerAd == null) {
-                  return const SizedBox.shrink();
-                }
-                return SizedBox(
-                  width: bannerAd.size.width.toDouble(),
-                  height: bannerAd.size.height.toDouble(),
-                  child: AdWidget(ad: bannerAd),
-                );
-              },
-            ),
+            const SizedBox.shrink(),
           ],
         ),
       ),

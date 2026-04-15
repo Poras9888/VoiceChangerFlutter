@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'dart:math';
+import 'dart:math' as math;
 import 'dart:typed_data';
 
 import 'effects/voice_effect.dart';
@@ -26,20 +26,20 @@ class AudioProcessor {
     final inputFile = File(inputPath);
     final bytes = await inputFile.readAsBytes();
     final pcm = bytes.buffer.asInt16List();
-    final out = List<double>.generate(pcm.length, (i) => pcm[i].toDouble());
+    var out = List<double>.generate(pcm.length, (i) => pcm[i].toDouble());
 
     for (var i = 0; i < out.length; i++) {
       var sample = out[i] / 32768.0;
       if (ringModHz != null) {
-        sample *= sin(2 * pi * ringModHz * i / 44100.0) * 0.8;
+        sample *= math.sin(2 * math.pi * ringModHz * i / 44100.0) * 0.8;
       }
       if (dualRingHz != null) {
         sample *=
-            (sin(2 * pi * dualRingHz[0] * i / 44100.0) + sin(2 * pi * dualRingHz[1] * i / 44100.0)) * 0.4;
+            (math.sin(2 * math.pi * dualRingHz[0] * i / 44100.0) + math.sin(2 * math.pi * dualRingHz[1] * i / 44100.0)) * 0.4;
       }
       if (distortion > 0) {
         final k = 1 + distortion * 10;
-        sample = tanh(k * sample);
+        sample = _softClip(k * sample);
       }
       if (reverb > 0 && i > 2205) {
         sample += out[i - 2205] / 32768.0 * reverb * 0.2;
@@ -54,10 +54,10 @@ class AudioProcessor {
     }
 
     if (reverse) {
-      out.reverse();
+      out = out.reversed.toList(growable: false);
     }
 
-    final pitched = _resample(out, pow(2, pitchSemitones / 12).toDouble() * speed);
+    final pitched = _resample(out, math.pow(2, pitchSemitones / 12).toDouble() * speed);
     final int16 = Int16List.fromList(
       pitched.map((e) => e.round().clamp(-32768, 32767)).toList(),
     );
@@ -75,5 +75,11 @@ class AudioProcessor {
       final t = src - i0;
       return input[i0] * (1 - t) + input[i1] * t;
     });
+  }
+
+  static double _softClip(double sample) {
+    if (sample > 1) return 1;
+    if (sample < -1) return -1;
+    return sample - (sample * sample * sample) / 3.0;
   }
 }

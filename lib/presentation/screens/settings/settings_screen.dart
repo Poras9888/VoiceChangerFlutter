@@ -41,7 +41,7 @@ class SettingsScreen extends StatelessWidget {
                     }
                     final ok = await LocalAuthentication().authenticate(
                       localizedReason: 'Enable biometric lock',
-                      options: const AuthenticationOptions(biometricOnly: true),
+                      biometricOnly: true,
                     );
                     if (ok) {
                       context.read<SettingsCubit>().setBiometricLock(value);
